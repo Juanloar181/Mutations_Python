@@ -1,0 +1,104 @@
+### Respuesta del ejercicio  de la pregunta teórica 6:
+import unittest
+import sys
+
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+    def subtract(self, a, b):
+        return a - b
+
+    def multiply(self, a, b):
+        return a * b
+
+    def divide(self, a, b):
+        if b == 0:
+            raise ValueError("No puede dividirse entre 0")
+        return a / b
+
+class TestCalculator(unittest.TestCase):
+    def setUp(self):
+        self.calc = Calculator()
+
+    def test_add(self):
+        self.assertEqual(self.calc.add(3, 2), 5)
+        self.assertEqual(self.calc.add(-1, 2), 1)
+        self.assertEqual(self.calc.add(0, 0), 0)
+        #Implementamos tests que detecten mutaciones
+        self.assertNotEqual(self.calc.add(4, 3), 1) 
+        self.assertNotEqual(self.calc.add(2, 3), 6)  
+        self.assertNotEqual(self.calc.add(8, 4), 2) 
+
+
+    def test_subtract(self):
+        self.assertEqual(self.calc.subtract(6, 3), 3)
+        self.assertEqual(self.calc.subtract(0, 1), -1)
+        self.assertEqual(self.calc.subtract(-3, -2), -1)
+        #Implementamos tests que detecten mutaciones
+        self.assertNotEqual(self.calc.subtract(6, 3), 9) 
+        self.assertNotEqual(self.calc.subtract(7, 3), 21) 
+        self.assertNotEqual(self.calc.subtract(6, 3), 2) 
+
+
+    def test_multiply(self):
+        self.assertEqual(self.calc.multiply(3, 4), 12)
+        self.assertEqual(self.calc.multiply(-2, 3), -6)
+        self.assertEqual(self.calc.multiply(0, 5), 0)
+        #Implementamos tests que detecten mutaciones
+        self.assertNotEqual(self.calc.multiply(5, 3), 8) 
+        self.assertNotEqual(self.calc.multiply(6, 3), 3) 
+        self.assertNotEqual(self.calc.multiply(6, 3), 2) 
+
+    def test_divide(self):
+        self.assertEqual(self.calc.divide(10, 2), 5)
+        self.assertEqual(self.calc.divide(0, 3), 0)
+        self.assertEqual(self.calc.divide(5, 2), 2.5)
+        #Implementamos tests que detecten mutaciones
+        self.assertNotEqual(self.calc.divide(5, 3), 8) 
+        self.assertNotEqual(self.calc.divide(7, 3), 4) 
+        self.assertNotEqual(self.calc.divide(9, 3), 27) 
+
+    def test_divide_by_zero(self):
+        with self.assertRaises(ValueError):
+            self.calc.divide(10, 0)
+
+
+#Función para aplicar mutaciones sobre el código original
+def apply_mutation(original_code, mutation):
+    return original_code.replace(*mutation)
+
+#Código base original
+code_str = """
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+    def subtract(self, a, b):
+        return a - b
+
+    def multiply(self, a, b):
+        return a * b
+
+    def divide(self, a, b):
+        if b == 0:
+            raise ValueError("No puede dividirse entre 0")
+        return a / b
+"""
+
+# Mutaciones a aplicar
+mutations = [
+    ("+", "-"),  # Mutación 1: Cambiar suma por resta
+    ("*", "/"),  # Mutación 2: Cambiar multiplicación por división
+    ("/", "*"),  # Mutación 3: Cambiar división por multiplicación
+]
+
+
+# Aplicar las mutaciones y probar.
+#Se aplican las mutaciones sobre code_str pero los tests se ejecutan igualmente.
+#fallando al detectar mutaciones, comprobando el correcto funcionamiento de estos.
+for i, mutation in enumerate(mutations, 1):
+    mutated_code = apply_mutation(code_str, mutation)
+    exec(mutated_code)  # Ejecutar el código con la mutación
+    print(f"\nEjecución de tests para mutación {i}: {mutation}")
+    unittest.main(argv=['first-arg-is-ignored'], exit=False, verbosity=2)
